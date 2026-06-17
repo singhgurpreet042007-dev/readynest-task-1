@@ -47,16 +47,27 @@ export default function PublicFormPage() {
   useEffect(() => { fetchForm(); }, [fetchForm]);
 
   async function onSubmit(data: Record<string, unknown>) {
-    if (!form) return;
-    setSubmitting(true);
-    const { error } = await supabase.from('form_responses').insert({
-      form_id: form.id,
-      data,
-    });
-    if (error) { alert('Submission failed. Please try again.'); setSubmitting(false); return; }
-    setSubmitted(true);
+  if (!form) return;
+
+  setSubmitting(true);
+
+  const { error } = await supabase
+    .from('form_responses')
+    .insert({
+  form_id: form.id,
+  data,
+});
+
+  if (error) {
+    console.error('Submission Error:', error);
+    alert(`Submission failed: ${error.message}`);
     setSubmitting(false);
+    return;
   }
+
+  setSubmitted(true);
+  setSubmitting(false);
+}
 
   if (loading) {
     return (
